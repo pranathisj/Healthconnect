@@ -1,0 +1,994 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>HealthConnect — Your wellness partner</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <!-- lightweight meta -->
+  <meta name="description" content="HealthConnect — book checkups, read health articles and get tips to stay well.">
+</head>
+  <body>
+  <script type="text/javascript">
+    // City selection logic and dynamic checkup rendering
+    (function() {
+      var selectedCity = localStorage.getItem('selectedCity');
+      if (!selectedCity) {
+        window.location.href = 'city.html';
+        return;
+      }
+
+      // Loads city-specific data and renders checkups, services, and FAQs
+      window.loadCityData = function(city) {
+        if (!window.cityData || !city || !cityData[city]) return;
+        // Render checkups
+        var checkups = cityData[city].checkups || [];
+        var checkupsContainer = document.getElementById('checkupsContainer');
+        if (checkupsContainer) {
+          if (checkups.length === 0) {
+            checkupsContainer.innerHTML = '<p class="muted">No checkups available for this city.</p>';
+          } else {
+            checkupsContainer.innerHTML = checkups.map(function(chk) {
+              return `<div class="checkup-card"><h3>${chk.name}</h3><button class="btn-teal small">Book Now</button></div>`;
+            }).join('');
+          }
+        }
+        // Render services
+        var services = cityData[city].services || [];
+        var servicesContainer = document.getElementById('servicesContainer');
+        if (servicesContainer) {
+          if (services.length === 0) {
+            servicesContainer.innerHTML = '<p class="muted">No services available for this city.</p>';
+          } else {
+            servicesContainer.innerHTML = '<ul>' + services.map(function(s) {
+              return `<li>${s}</li>`;
+            }).join('') + '</ul>';
+          }
+        }
+        // Render FAQs
+        var faqs = cityData[city].faqs || [];
+        var faqContainer = document.getElementById('faqContainer');
+        if (faqContainer) {
+          if (faqs.length === 0) {
+            faqContainer.innerHTML = '<p class="muted">No FAQs for this city.</p>';
+          } else {
+            faqContainer.innerHTML = faqs.map(function(f) {
+              return `<details><summary>${f.q}</summary><div>${f.a}</div></details>`;
+            }).join('');
+          }
+        }
+      };
+
+      // Initial render
+      loadCityData(selectedCity);
+    })();
+  </script>
+  <!-- Intro overlay: shows logo fade in/out before the site loads -->
+     <div id="intro-overlay" aria-hidden="true"></div>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#">
+        <span>HealthConnect</span>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="#services">Services</a>
+        <a href="#doctors">Doctors</a>
+        <a href="#articles">Articles</a>
+        <a href="#contact" class="btn-outline">Contact</a>
+      </nav>
+
+      <button class="menu-toggle" aria-label="Open menu" id="menuToggle">☰</button>
+    </div>
+  </header>
+
+  <main>
+    
+    <img src="pbl photos/healthconnect.jpg" alt="Health screening and medical checkup"
+    class="full-img">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <h1>Connecting People to care...</h1>
+          <div class="hero-cta">
+            <a href="#services" class="btn-primary">Explore Services</a>
+            <button id="openBooking" class="btn-teal">Book a free consult</button>
+          </div>
+
+        </div>
+        <div class="hero-card" aria-hidden="false">
+          <div class="card">
+            
+            <div class="card-body">
+              <h3>Free health-check screening</h3>
+              <p>Get a tailored health snapshot. Results in 24 hours.</p>
+              <div class="card-actions">
+                <button id="quickBook" class="btn-teal small">Book now</button>
+                <a href="#articles">Learn more →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="include-cities"></div>
+
+    <!-- Dynamic city-specific content will be injected here -->
+    <section id="cityContent" class="container city-content" aria-live="polite" style="display:none;">
+      <div id="cityResults"></div>
+    </section>
+
+      <a href="book_lab_tests.html" class="btn-primary" style="margin-right:10px;">Book lab tests</a>
+      <a href="book_checkups.html" class="btn-teal">Book checkups</a>
+
+    <section id="services" class="container services">
+      <h2>Services</h2>
+      <p class="lead">Comprehensive care — pick what you need.</p>
+      <div class="grid grid-3">
+        <article class="service">
+          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true"><path d="M12 2l3 6 6 .5-4.5 3.5L18 22l-6-4-6 4 1.5-9L3 8.5 9 8 12 2z"/></svg>
+          <h3>Telemedicine</h3>
+          <p>Video calls with certified doctors from the comfort of your home.</p>
+        </article>
+
+        <article class="service">
+          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true"><path d="M9 3c-.55 0-1 .45-1 1v3H6c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1V8c0-.55-.45-1-1-1h-2V4c0-.55-.45-1-1-1h-6zm0 2h6v3H9V5zm9 3v10H6V8h12z" fill="currentColor"/></svg>
+          <h3>Diagnostics</h3>
+          <p>Accredited labs for blood tests, imaging, and rapid reports.</p>
+        </article>
+
+        <article class="service">
+          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true"><path d="M4 7h16v10H4z"/></svg>
+          <h3>Wellness Plans</h3>
+          <p>Nutrition and exercise plans tailored to your goals.</p>
+        </article>
+
+        <article class="service">
+          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true"><path d="M12 2l2 4 4 .5-3 2.5 1 4-3.5-2.5-3.5 2.5 1-4-3-2.5 4-.5 2-4z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+          <h3>Emergency Assistance</h3>
+          <p>Quick access to emergency facilities and urgent care centers.</p>
+        </article>
+
+        <article class="service">
+          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3m0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+          <h3>Hospital Finder</h3>
+          <p>Locate nearby hospitals, clinics, and healthcare facilities.</p>
+        </article>
+
+        <article class="service">
+          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          <h3>Specialist Consultation</h3>
+          <p>Connect with doctors across various medical specialties.</p>
+        </article>
+
+        <article class="service">
+          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 9.5c0 .83-.67 1.5-1.5 1.5S11 13.33 11 12.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5z"/></svg>
+          <h3>Diagnostic Tests Booking</h3>
+          <p>Schedule blood tests, imaging, and lab diagnostics easily.</p>
+        </article>
+
+        <article class="service">
+          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 9.5c0 .83-.67 1.5-1.5 1.5S11 13.33 11 12.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5z"/></svg>
+          <h3>Health Checkup Packages</h3>
+          <p>Comprehensive screening packages for preventive health assessment.</p>
+        </article>
+
+        <article class="service">
+          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m1 15h-2v-2h2v2m0-4h-2V7h2v6z"/></svg>
+          <h3>Preventive Care</h3>
+          <p>Tools and resources to maintain wellness and prevent illness.</p>
+        </article>
+
+        <article class="service">
+          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8m3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>
+          <h3>Mental Wellness Support</h3>
+          <p>Access counseling and mental health resources for emotional care.</p>
+        </article>
+
+        <article class="service">
+          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2V17zm4 0h-2V7h2V17zm4 0h-2v-4h2V17z"/></svg>
+          <h3>Health Campaigns & Awareness</h3>
+          <p>Stay informed with verified health campaigns and awareness initiatives.</p>
+        </article>
+
+        <article class="service">
+          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-8-6z" stroke="currentColor" stroke-width="1" fill="none"/></svg>
+          <h3>Medical Articles & Resources</h3>
+          <p>Read trusted articles and health guides for everyday wellness knowledge.</p>
+        </article>
+
+        <article class="service">
+          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+          <h3>Appointment Management</h3>
+          <p>View, reschedule, and manage your healthcare appointments in one place.</p>
+        </article>
+      </div>
+    </section>
+
+    <div id="include-doctors"></div>
+
+    <section id="checkups" class="container checkups">
+      <h2>Most Booked Checkups</h2>
+      <p class="lead">Popular comprehensive checkup packages tailored to your needs.</p>
+      <div class="grid grid-3">
+        <div class="checkup-card">
+          <svg class="checkup-icon" viewBox="0 0 24 24" role="img" aria-hidden="true"><circle cx="12" cy="8" r="2" fill="#0b9d8f"/><path d="M12 10c-3 0-6 2-6 5v3h12v-3c0-3-3-5-6-5z" fill="#0b9d8f" opacity="0.8"/><path d="M15 19H9v2h6v-2z" fill="#0b9d8f" opacity="0.6"/></svg>
+          <h3>Full Body Checkup</h3>
+          <p class="muted">Complete health assessment including blood tests, vitals, and specialist consultation.</p>
+          <div style="margin-top:12px; height:60px; overflow:hidden;">
+            <ul style="font-size:0.9rem; margin:0; padding-left:20px;">
+              <li>Blood work</li>
+              <li>BP & vitals</li>
+              <li>Doctor review</li>
+            </ul>
+          </div>
+          <p style="font-size:0.85rem; color:#0b9d8f; font-weight:600; margin:10px 0 0;">Available: 9:00 AM - 12:00 PM, 2:00 PM - 5:00 PM</p>
+          <div class="card-actions" style="margin-top:12px;">
+            <a href="checkup_fullbody.html" class="btn-primary small">View Details</a>
+            <button class="btn-teal small" data-book="Full Body Checkup">Book now</button>
+          </div>
+        </div>
+        <div class="checkup-card">
+          <svg class="checkup-icon" viewBox="0 0 24 24" role="img" aria-hidden="true"><circle cx="12" cy="8" r="2.5" fill="#0b9d8f"/><path d="M12 10.5c-2.5 0-5 1.5-5 4v4.5h10V14.5c0-2.5-2.5-4-5-4z" fill="#0b9d8f" opacity="0.8"/><circle cx="8" cy="16" r="1" fill="#0b9d8f" opacity="0.6"/><circle cx="16" cy="16" r="1" fill="#0b9d8f" opacity="0.6"/></svg>
+          <h3>Women's Health Checkup</h3>
+          <p class="muted">Specialized screening for women including gynecology, breast exam, and wellness consultation.</p>
+          <div style="margin-top:12px; height:60px; overflow:hidden;">
+            <ul style="font-size:0.9rem; margin:0; padding-left:20px;">
+              <li>Gynecology exam</li>
+              <li>Breast screening</li>
+              <li>Hormonal tests</li>
+            </ul>
+          </div>
+          <p style="font-size:0.85rem; color:#0b9d8f; font-weight:600; margin:10px 0 0;">Available: 10:00 AM - 1:00 PM, 3:00 PM - 6:00 PM</p>
+          <div class="card-actions" style="margin-top:12px;">
+            <a href="checkup_womens.html" class="btn-primary small">View Details</a>
+            <button class="btn-teal small" data-book="Women's Health Checkup">Book now</button>
+          </div>
+        </div>
+
+        <div class="checkup-card">
+          <svg class="checkup-icon" viewBox="0 0 24 24" role="img" aria-hidden="true"><path d="M12 2c-5 0-9 3-9 8s3 9 9 13c6-4 9-8 9-13s-4-8-9-8zm-2 8h4v4h-4v-4z" fill="#0b9d8f"/><circle cx="8" cy="8" r="1" fill="#0b9d8f" opacity="0.6"/><circle cx="16" cy="8" r="1" fill="#0b9d8f" opacity="0.6"/></svg>
+          <h3>Allergy Checkup</h3>
+          <p class="muted">Identify and manage allergies with comprehensive testing and personalized treatment plans.</p>
+          <div style="margin-top:12px; height:60px; overflow:hidden;">
+            <ul style="font-size:0.9rem; margin:0; padding-left:20px;">
+              <li>Allergy panel test</li>
+              <li>Skin prick test</li>
+              <li>Management plan</li>
+            </ul>
+          </div>
+          <p style="font-size:0.85rem; color:#0b9d8f; font-weight:600; margin:10px 0 0;">Available: 8:00 AM - 11:00 AM, 1:00 PM - 4:00 PM</p>
+          <div class="card-actions" style="margin-top:12px;">
+            <a href="checkup_allergy.html" class="btn-primary small">View Details</a>
+            <button class="btn-teal small" data-book="Allergy Checkup">Book now</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="articles" class="container articles">
+      <h2>Latest Articles</h2>
+      <div class="grid grid-3">
+        <article class="article-card">
+          <h4>5 Tips to improve sleep quality</h4>
+          <p class="muted">Sleep hygiene tips backed by science — small changes, big results.</p>
+          <a href="#" class="read-more">Read →</a>
+        </article>
+
+        <article class="article-card">
+          <h4>Heart-friendly foods</h4>
+          <p class="muted">Foods that support cardiovascular health and reduce inflammation.</p>
+          <a href="#" class="read-more">Read →</a>
+        </article>
+
+        <article class="article-card">
+          <h4>Quick home workouts</h4>
+          <p class="muted">10 minute routines you can do anywhere with no equipment.</p>
+          <a href="#" class="read-more">Read →</a>
+        </article>
+      </div>
+    </section>
+
+    <section id="contact" class="container contact">
+
+      <section id="vital-parts" class="container vital-parts">
+        <h2>For vital body parts</h2>
+        <p class="lead">Choose a body part to see recommended tests.</p>
+        <div class="vital-grid">
+          <div class="vital-col">
+            <a href="vital_heart.html" class="vital-btn" title="Heart">
+              <svg viewBox="0 0 24 24" class="vital-icon" aria-hidden="true"><path d="M12 2c2 0 4 1 5 3c1-2 3-3 5-3c3 0 5 2.5 5 5.5c0 8-10 14-10 14S2 16.5 2 8.5C2 5.5 4 3 7 3c2 0 4 1 5 3z" fill="#e63946"/><path d="M8 6c-1.5 1-2 2.5-2 4c0 3 3 6 6 8c3-2 6-5 6-8c0-1.5-.5-3-2-4" fill="none" stroke="#fff" stroke-width="1.2" opacity="0.7"/><line x1="12" y1="8" x2="12" y2="14" stroke="#fff" stroke-width="0.8" opacity="0.6"/></svg>
+            </a>
+            <div class="vital-label">Heart</div>
+          </div>
+          <div class="vital-col">
+            <a href="vital_kidney.html" class="vital-btn" title="Kidney">
+              <svg viewBox="0 0 24 24" class="vital-icon" aria-hidden="true"><path d="M8 9c-2 0-3.5 1.5-3.5 4s1.5 4 3.5 4c1 0 2-0.5 2.5-1.5M16 9c2 0 3.5 1.5 3.5 4s-1.5 4-3.5 4c-1 0-2-0.5-2.5-1.5M12 6v12M8 13h8" stroke="#0b9d8f" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <div class="vital-label">Kidney</div>
+          </div>
+          <div class="vital-col">
+            <a href="vital_liver.html" class="vital-btn" title="Liver">
+              <svg viewBox="0 0 24 24" class="vital-icon" aria-hidden="true"><path d="M4 12c0-4 2-7 7-7c3 0 5 1 6 3c1-1 2-3 3-3c2 0 4 2 4 5c0 6-4 9-10 9C7 18 4 16 4 12z" stroke="#f4a259" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="1.5" fill="none" stroke="#f4a259" stroke-width="1.5"/></svg>
+            </a>
+            <div class="vital-label">Liver</div>
+          </div>
+          <div class="vital-col">
+            <a href="vital_bone.html" class="vital-btn" title="Bone">
+              <svg viewBox="0 0 24 24" class="vital-icon" aria-hidden="true"><circle cx="5" cy="5" r="2.5" fill="none" stroke="#bdbdbd" stroke-width="1.5"/><circle cx="19" cy="19" r="2.5" fill="none" stroke="#bdbdbd" stroke-width="1.5"/><line x1="7.5" y1="7.5" x2="16.5" y2="16.5" stroke="#bdbdbd" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="1" fill="#bdbdbd"/></svg>
+            </a>
+            <div class="vital-label">Bone</div>
+          </div>
+          <div class="vital-col">
+            <a href="vital_vitamin.html" class="vital-btn" title="Vitamin">
+              <svg viewBox="0 0 24 24" class="vital-icon" aria-hidden="true"><rect x="8" y="3" width="8" height="6" rx="1" fill="none" stroke="#ffe066" stroke-width="1.5"/><rect x="8" y="15" width="8" height="6" rx="1" fill="none" stroke="#ffe066" stroke-width="1.5"/><line x1="12" y1="6" x2="12" y2="15" stroke="#ffe066" stroke-width="1.5" stroke-linecap="round"/><line x1="8" y1="9" x2="16" y2="9" stroke="#ffe066" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </a>
+            <div class="vital-label">Vitamin</div>
+          </div>
+          <div class="vital-col">
+            <a href="vital_hormones.html" class="vital-btn" title="Hormones">
+              <svg viewBox="0 0 24 24" class="vital-icon" aria-hidden="true"><circle cx="12" cy="7" r="2.5" fill="none" stroke="#a259f4" stroke-width="1.5"/><circle cx="8" cy="15" r="2.5" fill="none" stroke="#a259f4" stroke-width="1.5"/><circle cx="16" cy="15" r="2.5" fill="none" stroke="#a259f4" stroke-width="1.5"/><line x1="12" y1="9.5" x2="10" y2="12.5" stroke="#a259f4" stroke-width="1.5" stroke-linecap="round"/><line x1="12" y1="9.5" x2="14" y2="12.5" stroke="#a259f4" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </a>
+            <div class="vital-label">Hormones</div>
+          </div>
+          <div class="vital-col">
+            <a href="vital_gut.html" class="vital-btn" title="Gut Health">
+              <svg viewBox="0 0 24 24" class="vital-icon" aria-hidden="true"><path d="M7 8c0-2 2-3 5-3s5 1 5 3-2 3-5 3-5 1-5 3 2 3 5 3 5-1 5-3" fill="none" stroke="#43aa8b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="10" r="1.2" fill="none" stroke="#43aa8b" stroke-width="1.5"/><circle cx="15" cy="10" r="1.2" fill="none" stroke="#43aa8b" stroke-width="1.5"/></svg>
+            </a>
+            <div class="vital-label">Gut Health</div>
+          </div>
+          <div class="vital-col">
+            <a href="vital_blood.html" class="vital-btn" title="Blood">
+              <svg viewBox="0 0 24 24" class="vital-icon" aria-hidden="true"><path d="M12 2c3 5 6 9 6 12a6 6 0 1 1-12 0c0-3 3-7 6-12z" fill="none" stroke="#e63946" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="16" r="0.75" fill="#e63946"/></svg>
+            </a>
+            <div class="vital-label">Blood</div>
+          </div>
+          <div class="vital-col">
+            <a href="vital_reproductive.html" class="vital-btn" title="Reproductive Organs">
+              <svg viewBox="0 0 24 24" class="vital-icon" aria-hidden="true"><path d="M12 3c-2 0-4 2-4 4v1c-2 1-3 3-3 5v6h2v-6c0-2 1-3 3-3v1c0 2 2 4 4 4s4-2 4-4v-1c2 0 3 1 3 3v6h2v-6c0-2-1-4-3-5v-1c0-2-2-4-4-4z" fill="none" stroke="#f28482" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <div class="vital-label">Reproductive Organs</div>
+          </div>
+        </div>
+      </section>
+
+      <h2>Find Nearby Clinics in Davangere</h2>
+      <p class="lead">Discover quality healthcare centers near you.</p>
+
+      <div style="margin: 40px 0;">
+        <div id="map" style="height: 500px; width: 100%; margin-bottom: 30px; border-radius: 12px; box-shadow: 0 6px 20px rgba(12,18,20,0.1);"></div>
+        
+        <div id="clinicsList" style="margin-top: 30px;">
+          <h4 style="margin-top: 0; margin-bottom: 16px; color: #0b9d8f;">Available Clinics Near You</h4>
+          <div id="clincisContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;"></div>
+        </div>
+
+        
+      </div>
+
+      <h2 style="margin-top: 60px;">Contact & Bookings</h2>
+      <p class="lead">Have a question? Send us a message or request a callback.</p>
+
+      <div class="contact-grid">
+        <form id="contactForm" class="contact-form" novalidate>
+          <label>
+            <span>Name</span>
+            <input type="text" name="name" id="name" required placeholder="Your full name">
+          </label>
+
+          <label>
+            <span>Email</span>
+            <input type="email" name="email" id="email" required placeholder="you@example.com">
+          </label>
+
+          <label>
+            <span>Message</span>
+            <textarea name="message" id="message" rows="4" placeholder="How can we help?"></textarea>
+          </label>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Send message</button>
+            <button type="reset" class="btn-teal">Reset</button>
+          </div>
+
+          <p id="formStatus" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <section class="container" id="why-choose">
+    <h2>Why Choose HealthConnect?</h2>
+    <ul style="font-size:1rem; line-height:1.6; color:#0f172a; margin:16px 0; padding-left:24px;">
+      <li><strong>Quick access to nearby hospitals and clinics</strong> — Find quality healthcare services in your area instantly.</li>
+      <li><strong>Easy discovery of doctors and specialists by department</strong> — Search and connect with healthcare professionals suited to your needs.</li>
+      <li><strong>Support during urgent and emergency situations</strong> — Access information and locate emergency care when you need it most.</li>
+      <li><strong>Online appointment and test booking</strong> — Schedule consultations and diagnostic tests at your convenience.</li>
+      <li><strong>Verified healthcare services, campaigns, and articles</strong> — Trustworthy information to support informed health decisions.</li>
+      <li><strong>Simple and accessible design for all users</strong> — Clear navigation and plain language, designed for everyone.</li>
+    </ul>
+  </section>
+
+  <section class="container" id="how-it-works">
+    <h2>How HealthConnect Works</h2>
+    <div style="margin:20px 0;">
+      <div style="margin-bottom:20px;">
+        <h4 style="color:#0b9d8f; margin:0 0 6px;">Step 1: Select your location and healthcare need</h4>
+        <p style="margin:0; color:#6b7280; font-size:0.95rem;">Tell us where you are and what kind of care or information you're looking for.</p>
+      </div>
+      <div style="margin-bottom:20px;">
+        <h4 style="color:#0b9d8f; margin:0 0 6px;">Step 2: Browse hospitals, specialists, tests, and services</h4>
+        <p style="margin:0; color:#6b7280; font-size:0.95rem;">Explore verified options tailored to your location and healthcare needs.</p>
+      </div>
+      <div style="margin-bottom:20px;">
+        <h4 style="color:#0b9d8f; margin:0 0 6px;">Step 3: Book appointments or view availability</h4>
+        <p style="margin:0; color:#6b7280; font-size:0.95rem;">Schedule directly and receive confirmation at your convenience.</p>
+      </div>
+      <div>
+        <h4 style="color:#0b9d8f; margin:0 0 6px;">Step 4: Access healthcare information anytime</h4>
+        <p style="margin:0; color:#6b7280; font-size:0.95rem;">Read reliable articles and guidelines to support your health decisions.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="container" id="faq">
+    <h2>Frequently Asked Questions</h2>
+    <div style="margin:20px 0;">
+      <div style="margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid #e0e0e0;">
+        <h4 style="color:#0f172a; margin:0 0 6px; font-weight:600;">What is HealthConnect and how does it help?</h4>
+        <p style="margin:0; color:#6b7280; font-size:0.95rem;">HealthConnect is a platform that helps you find nearby hospitals, clinics, and specialists, book appointments and tests, and access reliable health information. It simplifies finding and managing healthcare.</p>
+      </div>
+      <div style="margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid #e0e0e0;">
+        <h4 style="color:#0f172a; margin:0 0 6px; font-weight:600;">Is HealthConnect meant for emergencies?</h4>
+        <p style="margin:0; color:#6b7280; font-size:0.95rem;">HealthConnect helps you find emergency facilities and hospitals quickly. However, in life-threatening situations, always call emergency services directly (e.g., 108, 112) or visit the nearest hospital immediately.</p>
+      </div>
+      <div style="margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid #e0e0e0;">
+        <h4 style="color:#0f172a; margin:0 0 6px; font-weight:600;">How do I find nearby hospitals or specialists?</h4>
+        <p style="margin:0; color:#6b7280; font-size:0.95rem;">Select your city or location on the platform, then browse available hospitals, clinics, and specialists by department. You can view their services, availability, and contact details.</p>
+      </div>
+      <div style="margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid #e0e0e0;">
+        <h4 style="color:#0f172a; margin:0 0 6px; font-weight:600;">Can I book appointments and tests through HealthConnect?</h4>
+        <p style="margin:0; color:#6b7280; font-size:0.95rem;">Yes. You can book appointments with doctors, schedule consultations, and arrange diagnostic tests directly through the platform. Confirmation details are provided after booking.</p>
+      </div>
+      <div style="margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid #e0e0e0;">
+        <h4 style="color:#0f172a; margin:0 0 6px; font-weight:600;">Is the information on HealthConnect verified?</h4>
+        <p style="margin:0; color:#6b7280; font-size:0.95rem;">We work to maintain accurate, current information about hospitals, clinics, and services. We also provide articles and health campaigns designed to be reliable and clear. Always confirm details directly with your provider.</p>
+      </div>
+      <div style="margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid #e0e0e0;">
+        <h4 style="color:#0f172a; margin:0 0 6px; font-weight:600;">Does HealthConnect replace doctors or emergency services?</h4>
+        <p style="margin:0; color:#6b7280; font-size:0.95rem;">No. HealthConnect helps you find and connect with healthcare professionals, but it does not replace medical advice, consultation, or emergency care. Always follow your doctor's guidance and seek professional care when needed.</p>
+      </div>
+      <div style="margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid #e0e0e0;">
+        <h4 style="color:#0f172a; margin:0 0 6px; font-weight:600;">Is HealthConnect free to use?</h4>
+        <p style="margin:0; color:#6b7280; font-size:0.95rem;">HealthConnect's core services — finding hospitals, browsing specialists, and accessing information — are free. Appointment and test booking costs are set by the respective healthcare providers.</p>
+      </div>
+      <div style="margin-bottom:0;">
+        <h4 style="color:#0f172a; margin:0 0 6px; font-weight:600;">How do I contact HealthConnect if I have issues or feedback?</h4>
+        <p style="margin:0; color:#6b7280; font-size:0.95rem;">You can reach us at healthconnectka@gmail.com with any questions, feedback, or concerns. We're here to help.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="container about" id="about">
+    <h2>About Us</h2>
+    <p>HealthConnect connects you with reliable local care when you need it. Our platform helps you find nearby hospitals and clinics, search doctors and specialists by department, and view available medical tests and services so you can make informed choices quickly and confidently. You can also book appointments and consultations directly and access clear, practical articles and health campaigns designed to support everyday care and preparedness.</p>
+
+    <p>We prioritize straightforward information and dependable tools to help you manage care and respond to urgent needs. Our listings and service details are presented plainly to support timely decisions; we do not make exaggerated promises, and we encourage users to verify appointments and follow clinician guidance.</p>
+
+    <p>Official contact: healthconnectka@gmail.com</p>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year"></span> HealthConnect. All rights reserved.</p>
+      <p class="muted">Built with care • Accessible • Responsive</p>
+    </div>
+  </footer>
+
+  <!-- Booking modal (hidden by default) -->
+  <div id="bookingModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-panel">
+      <button class="modal-close" id="closeModal" aria-label="Close booking">✕</button>
+      <h3>Book a Consultation</h3>
+      <p id="modalDesc">Fill in your details and select a time slot.</p>
+
+      <form id="bookingForm">
+        <label>
+          <span>Full Name</span>
+          <input required type="text" id="bname" placeholder="Your full name">
+        </label>
+
+        <label>
+          <span>Phone</span>
+          <input required type="tel" id="bphone" placeholder="+91 9XXXXXXXXX">
+        </label>
+
+        <label>
+          <span>Department</span>
+          <select required id="bdepartment">
+            <option value="">Select a department</option>
+            <option value="general">General Physician</option>
+            <option value="cardiology">Cardiology</option>
+            <option value="neurology">Neurology</option>
+            <option value="orthopedics">Orthopedics</option>
+            <option value="gynecology">Gynecology</option>
+            <option value="pediatrics">Pediatrics</option>
+            <option value="dermatology">Dermatology</option>
+            <option value="ent">ENT</option>
+            <option value="pulmonology">Pulmonology</option>
+            <option value="psychiatry">Psychiatry</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Doctor</span>
+          <select required id="bdoctor">
+            <option value="">Select a doctor</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Preferred Date</span>
+          <input required type="date" id="bdate">
+        </label>
+
+        <div class="time-slot-group">
+          <h5>Select Time Slot</h5>
+          <div class="time-slots" id="morningSlots">
+            <h6 style="grid-column: 1 / -1; margin: 0; color: var(--accent-dark); font-weight: 600; font-size: 0.85rem;">Morning (9:00 AM - 12:00 PM)</h6>
+            <button type="button" class="time-slot-btn" data-time="09:00">9:00 AM</button>
+            <button type="button" class="time-slot-btn" data-time="09:30">9:30 AM</button>
+            <button type="button" class="time-slot-btn" data-time="10:00">10:00 AM</button>
+            <button type="button" class="time-slot-btn" data-time="10:30">10:30 AM</button>
+            <button type="button" class="time-slot-btn" data-time="11:00">11:00 AM</button>
+            <button type="button" class="time-slot-btn" data-time="11:30">11:30 AM</button>
+          </div>
+
+          <div class="time-slots" id="afternoonSlots" style="margin-top: 16px;">
+            <h6 style="grid-column: 1 / -1; margin: 0; color: var(--accent-dark); font-weight: 600; font-size: 0.85rem;">Afternoon (2:00 PM - 5:00 PM)</h6>
+            <button type="button" class="time-slot-btn" data-time="14:00">2:00 PM</button>
+            <button type="button" class="time-slot-btn" data-time="14:30">2:30 PM</button>
+            <button type="button" class="time-slot-btn" data-time="15:00">3:00 PM</button>
+            <button type="button" class="time-slot-btn" data-time="15:30">3:30 PM</button>
+            <button type="button" class="time-slot-btn" data-time="16:00">4:00 PM</button>
+            <button type="button" class="time-slot-btn" data-time="16:30">4:30 PM</button>
+          </div>
+
+          <input type="hidden" id="btime" value="">
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Request Booking</button>
+          <button type="button" class="btn-outline" id="cancelBooking">Cancel</button>
+        </div>
+
+        <p id="bookingStatus" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    // Doctor data by department
+    const doctorsByDepartment = {
+      dentist: [
+        { name: 'Dr. Chhaya Jain.', experience: '8 years' }
+      ],
+      ophthalmology: [
+        { name: 'Dr. Ravnidranth H.M', experience: '10 years' }
+      ],
+      pulmonology: [
+        { name: 'Dr.N.H Krishna', experience: '20 years' }
+      ],
+      general_surgery: [
+        { name: 'Dr. Susruth Maralihalli', experience: '17 years' }
+      ],
+      cardiology: [
+        { name: 'Dr. Mallesh P', experience: '30 years' }
+      ],
+      gynecology: [
+        { name: 'Dr. Hegde Rashmi', experience: '15 years' }
+      ],
+      psychiatry: [
+        { name: 'Dr. Sushil Kumar SV', experience: '22 years' }
+      ],
+      dermatology: [
+        { name: 'Dr. Deepthi Ravishankar', experience: '9 years' }
+      ],
+      ent: [
+        { name: 'Dr. Manjunath H.A', experience: '13 years' }
+      ],
+      nutrition: [
+        { name: 'Dr. Meera P', experience: '7 years' }
+      ],
+      pediatrics: [
+        { name: 'Dr. Mruthyunjaya Surangi', experience: '10 years' }
+      ],
+      orthopedics: [
+        { name: 'Dr. Basavaraj K', experience: '12 years' }
+      ]
+    };
+
+    // Update doctor list when department changes
+    const doctorSelect = document.getElementById('bdoctor');
+
+    function populateDoctorSelect(dept) {
+      doctorSelect.innerHTML = '<option value="">Select a doctor</option>';
+      if (!dept) {
+        // populate with all unique doctors
+        const seen = new Set();
+        Object.values(doctorsByDepartment).flat().forEach(doc => {
+          if (!seen.has(doc.name)) {
+            seen.add(doc.name);
+            const opt = document.createElement('option');
+            opt.value = doc.name;
+            opt.textContent = `${doc.name} · ${doc.experience}`;
+            doctorSelect.appendChild(opt);
+          }
+        });
+        return;
+      }
+      const doctors = doctorsByDepartment[dept] || [];
+      doctors.forEach(doc => {
+        const option = document.createElement('option');
+        option.value = doc.name;
+        option.textContent = `${doc.name} · ${doc.experience}`;
+        doctorSelect.appendChild(option);
+      });
+    }
+
+    document.getElementById('bdepartment').addEventListener('change', function() {
+      populateDoctorSelect(this.value);
+    });
+
+    // populate all doctors on load so the select shows options immediately
+    document.addEventListener('DOMContentLoaded', function(){
+      populateDoctorSelect();
+    });
+
+    // Time slot selection
+    document.querySelectorAll('.time-slot-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelectorAll('.time-slot-btn').forEach(b => b.classList.remove('selected'));
+        this.classList.add('selected');
+        document.getElementById('btime').value = this.getAttribute('data-time');
+      });
+    });
+
+    // Booking button logic: auto-select department and update doctor list
+    function openBookingModal(department) {
+      const modal = document.getElementById('bookingModal');
+      if (modal) {
+        modal.setAttribute('aria-hidden', 'false');
+        modal.style.display = 'block';
+      }
+      const deptSelect = document.getElementById('bdepartment');
+      if (department && deptSelect) {
+        deptSelect.value = department;
+        populateDoctorSelect(department);
+      } else if (deptSelect) {
+        deptSelect.value = '';
+        populateDoctorSelect();
+      }
+    }
+
+    // Attach to all booking buttons with data-book attribute
+    document.querySelectorAll('[data-book]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        // Try to infer department from button or card
+        let department = '';
+        const bookType = this.getAttribute('data-book') || '';
+        // Map button label to department key
+        const map = {
+          'Full Body Checkup': 'general',
+          "Women's Health Checkup": 'gynecology',
+          'Allergy Checkup': 'dermatology',
+          // Add more mappings as needed
+        };
+        department = map[bookType] || '';
+        openBookingModal(department);
+      });
+    });
+
+    // Also attach to the main Book a free consult button
+    const openBookingBtn = document.getElementById('openBooking');
+    if (openBookingBtn) {
+      openBookingBtn.addEventListener('click', function() {
+        openBookingModal();
+      });
+    }
+  </script>
+
+  <script type="text/javascript">
+    // Load HTML partials for cities and doctors, then attach handlers to preserve behavior
+    document.addEventListener('DOMContentLoaded', function(){
+      const fallbackPartials = {
+        'cities/cities.html': `
+<section class="container cities">
+  <h2>Select Your City</h2>
+  <p class="lead">Choose a location near you.</p>
+  <ul class="city-list">
+    <li class="city-item" data-city="Bengaluru"><span class="city-name">Bengaluru</span></li>
+    <li class="city-item" data-city="Davangere"><span class="city-name">Davangere</span></li>
+    <li class="city-item" data-city="Hubli"><span class="city-name">Hubli</span></li>
+    <li class="city-item" data-city="Mysuru"><span class="city-name">Mysuru</span></li>
+    <li class="city-item" data-city="Mangalore"><span class="city-name">Mangalore</span></li>
+    <li class="city-item" data-city="Shivamogga"><span class="city-name">Shivamogga</span></li>
+    <li class="city-item" data-city="Udupi"><span class="city-name">Udupi</span></li>
+    <li class="city-item" data-city="Manipal"><span class="city-name">Manipal</span></li>
+    <li class="city-item" data-city="Chikkamagaluru"><span class="city-name">Chikkamagaluru</span></li>
+    <li class="city-item" data-city="Chitradurga"><span class="city-name">Chitradurga</span></li>
+    <li class="city-item" data-city="Haveri"><span class="city-name">Haveri</span></li>
+    <li class="city-item" data-city="Coorg"><span class="city-name">Coorg</span></li>
+    <li class="city-item" data-city="Gadag"><span class="city-name">Gadag</span></li>
+    <li class="city-item" data-city="Hassan"><span class="city-name">Hassan</span></li>
+  </ul>
+</section>
+        `,
+        'doctors/doctors.html': `
+<section id="doctors" class="container doctors">
+  <h2>Featured Doctors</h2>
+  <div class="grid grid-3">
+    <div class="doctor-card"><img src="pbl photos/Dr Asha.jpeg" alt="Dr. Asha"><div class="doc-body"><h4>Dr. Asha R.</h4><p>General Physician · 12 years</p><div class="rating">⭐ 4.8</div><button class="btn-outline small connect" data-doc="Dr. Asha R.">Consult</button></div></div>
+    <div class="doctor-card"><img src="pbl photos/Dr Rahul.jpeg" alt="Dr. Rahul"><div class="doc-body"><h4>Dr. Rahul S.</h4><p>Cardiologist · 9 years</p><div class="rating">⭐ 4.7</div><button class="btn-outline small connect" data-doc="Dr. Rahul S.">Consult</button></div></div>
+    <div class="doctor-card"><img src="pbl photos/Dr Meera.jpeg" alt="Dr. Meera"><div class="doc-body"><h4>Dr. Meera P.</h4><p>Nutritionist · 7 years</p><div class="rating">⭐ 4.9</div><button class="btn-outline small connect" data-doc="Dr. Meera P.">Consult</button></div></div>
+    <div class="doctor-card"><img src="pbl photos/Dr Vikram.jpeg" alt="Dr. Vikram"><div class="doc-body"><h4>Dr. Vikram M.</h4><p>Neurologist · 11 years</p><div class="rating">⭐ 4.8</div><button class="btn-outline small connect" data-doc="Dr. Vikram M.">Consult</button></div></div>
+    <div class="doctor-card"><img src="pbl photos/Dr Anil.jpeg" alt="Dr. Anil"><div class="doc-body"><h4>Dr. Anil K.</h4><p>Orthopedic · 10 years</p><div class="rating">⭐ 4.7</div><button class="btn-outline small connect" data-doc="Dr. Anil K.">Consult</button></div></div>
+    <div class="doctor-card"><img src="pbl photos/Dr Priya.jpeg" alt="Dr. Priya"><div class="doc-body"><h4>Dr. Priya N.</h4><p>Gynecologist · 8 years</p><div class="rating">⭐ 4.9</div><button class="btn-outline small connect" data-doc="Dr. Priya N.">Consult</button></div></div>
+  </div>
+</section>
+        `
+      };
+
+      function loadPartial(url, targetId, cb){
+        fetch(url).then(r=>{
+          if(!r.ok) throw new Error('Network response was not ok');
+          return r.text();
+        }).then(html=>{
+          const el = document.getElementById(targetId);
+          if(!el) return;
+          try{
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            // Prefer content inside a <template> (our safe fragment), otherwise first <section>, otherwise body
+            let fragmentHtml = '';
+            const tpl = doc.querySelector('template');
+            if(tpl) fragmentHtml = tpl.innerHTML;
+            else {
+              const sec = doc.querySelector('section');
+              if(sec) fragmentHtml = sec.innerHTML;
+              else fragmentHtml = doc.body ? doc.body.innerHTML : html;
+            }
+            el.innerHTML = fragmentHtml;
+          }catch(ex){
+            // Fallback to raw HTML if parsing fails
+            el.innerHTML = html;
+          }
+          if(typeof cb === 'function') cb();
+        }).catch(e=>{
+          console.warn('Failed to load partial via fetch', url, e);
+          const fallback = fallbackPartials[url];
+          if(fallback){
+            const el = document.getElementById(targetId);
+            if(el) el.innerHTML = fallback;
+            if(typeof cb === 'function') cb();
+            return;
+          }
+          console.error('No fallback available for', url);
+        });
+      }
+
+      function bindCityItems(){
+        document.querySelectorAll('.city-item').forEach(function(li){
+          li.setAttribute('tabindex','0');
+          li.setAttribute('role','button');
+          li.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); li.click(); } });
+          li.addEventListener('click', function(){
+            const city = li.getAttribute('data-city');
+            if(city && typeof window.selectCity === 'function') window.selectCity(city, li);
+          });
+        });
+      }
+
+      function bindConnectButtons(){
+        document.querySelectorAll('.connect').forEach(btn=>{
+          btn.addEventListener('click', function(){
+            const name = this.getAttribute('data-doc');
+            if(name && typeof window.selectDoctorBooking === 'function') window.selectDoctorBooking(name);
+          });
+        });
+      }
+
+      loadPartial('cities/cities.html','include-cities', function(){ bindCityItems(); });
+      loadPartial('doctors/doctors.html','include-doctors', function(){ bindConnectButtons(); });
+    });
+  </script>
+  <!-- City selection script -->
+  <script type="text/javascript">
+    (function(){
+      console.log('City-renderer script loaded');
+      try{
+      const cityData = {
+        Bengaluru: {
+          clinics: [ {name: 'GreenLeaf Clinic', locality: 'Koramangala'}, {name: 'Aster Care', locality: 'Indiranagar'}, {name:'BlueCross Hospital', locality:'Jayanagar'} ],
+          doctors: [ {name:'Dr. S. Kumar', spec:'General Physician', exp:'10 yrs', rating:'4.6'}, {name:'Dr. Meera Rao', spec:'Cardiologist', exp:'12 yrs', rating:'4.8'} ],
+          services: ['Diagnostics','Telemedicine','Wellness Plans'],
+          packages: [ {name:'Full Body Checkup', desc:'Comprehensive tests', price:'₹1499'}, {name:"Women's Health Checkup", desc:'Hormone + reproductive panel', price:'₹1299'} ],
+          faqs: [ {q:'Are clinics open on weekends?', a:'Yes — many partner clinics operate on Saturdays.'}, {q:'How do I book?', a:'Click Book Now on any package or doctor card to request a consult.'} ]
+        },
+        Davangere: {
+          clinics: [ {name:'Nandi Hospital', locality:'5th cross, 4th Main Road, Prince Jayachamarajendra Wodeyar'}, {name:'Mangaluru Speciality Clinic', locality:'9th cross, 4th Main Road, Prince Jayachamarajendra Wodeyar'},
+           {name:'Aaraike Super Speciality Hospital', locality:'KTJ Nagar, Nittuvalli'}, {name:'Kolors Health Care', locality:'Dental College Road, MCC B Block'} ], 
+          doctors: [ {name:'Dr. Susruth Maralihalli', spec:'Laparoscopic Surgeon', exp:'24 yrs', rating:'4.5'}, {name:'Dr. N.H Krishna', spec:'Pulmonologist', exp:'20 yrs', rating:'4.7'} ],
+          services: ['Diagnostics','Specialist Consultation'],
+          packages: [ {name:'Basic Checkup', desc:'Essential blood tests', price:'₹799'} ],
+          faqs: [ {q:'Is home sample collection available?', a:'Available in selected localities, please contact support.'} ]
+        },
+        Hubli: {
+          clinics:[{name:'Hubli Health', locality:'Station Road'}],
+          doctors:[{name:'Dr. A. Patil', spec:'Orthopedics', exp:'9 yrs', rating:'4.4'}],
+          services:['Diagnostics','Emergency Assistance'],
+          packages:[{name:'Bone Health Check', desc:'Bone density + vitals', price:'₹999'}],
+          faqs:[{q:'What are clinic timings?', a:'Typically 9 AM to 6 PM; check clinic details after selection.'}]
+        },
+        Mysuru: { clinics:[{name:'Palace Clinic', locality:'Gandhi Nagar'}], doctors:[{name:'Dr. N. Sharma', spec:'Dermatology', exp:'8 yrs', rating:'4.7'}], services:['Telemedicine','Wellness Plans'], packages:[{name:'Skin Care Pack', desc:'Dermatology screening', price:'₹699'}], faqs:[{q:'Are specialist consultations available?', a:'Yes, book via the doctor cards.'}] },
+        Mangalore: { clinics:[{name:'Coastline Health', locality:'Pumpwell'}], doctors:[{name:'Dr. L. Fernandes', spec:'Gynecology', exp:'11 yrs', rating:'4.8'}], services:['Diagnostics','Hospital Finder'], packages:[{name:'Women\'s Health Checkup', desc:'Careful screening', price:'₹1399'}], faqs:[{q:'Is diagnostic reporting fast?', a:'Most labs provide results within 24 hours.'}] },
+        Shivamogga: { clinics:[{name:'River Clinic', locality:'Shivamogga Town'}], doctors:[{name:'Dr. K. Rao', spec:'ENT', exp:'6 yrs', rating:'4.3'}], services:['Specialist Consultation'], packages:[{name:'ENT Package', desc:'Hearing and sinus tests', price:'₹599'}], faqs:[{q:'How to reschedule?', a:'Use the booking confirmation to reschedule or contact support.'}] },
+        Udupi: { clinics:[{name:'Temple Road Clinic', locality:'Car Street'}], doctors:[{name:'Dr. S. N.', spec:'General Physician', exp:'5 yrs', rating:'4.2'}], services:['Telemedicine'], packages:[{name:'Basic Health Check', desc:'Vitals+basic labs', price:'₹699'}], faqs:[{q:'Can I call for help?', a:'Yes, support number is available on the site.'}] },
+        Manipal: { clinics:[{name:'Campus Health', locality:'Manipal University'}], doctors:[{name:'Dr. P. Shenoy', spec:'Psychiatry', exp:'9 yrs', rating:'4.6'}], services:['Wellness Plans'], packages:[{name:'Student Health Pack', desc:'Common student screenings', price:'₹499'}], faqs:[{q:'Are there student discounts?', a:'Discounts vary by partner; see package details.'}] },
+        Chikkamagaluru: { clinics:[{name:'Hillside Clinic', locality:'Coffee Road'}], doctors:[{name:'Dr. L. Kumar', spec:'Pulmonology', exp:'8 yrs', rating:'4.4'}], services:['Diagnostics'], packages:[{name:'Lung Health Pack', desc:'Pulmonary screening', price:'₹899'}], faqs:[{q:'Are home visits offered?', a:'Available in select areas; contact clinic for details.'}] },
+        Chitradurga: { clinics:[{name:'Fort Health Center', locality:'Old Town'}], doctors:[{name:'Dr. R. K.', spec:'General Physician', exp:'7 yrs', rating:'4.1'}], services:['Diagnostics','Emergency Assistance'], packages:[{name:'Basic Checkup', desc:'Vitals + basic labs', price:'₹699'}], faqs:[{q:'What payment methods?', a:'UPI, cards, and cash accepted at most clinics.'}] },
+        Haveri: { clinics:[{name:'Haveri Care', locality:'Main Bazaar'}], doctors:[{name:'Dr. V. S', spec:'General', exp:'6 yrs', rating:'4.0'}], services:['Telemedicine'], packages:[{name:'Rural Health Pack', desc:'Essential screening', price:'₹499'}], faqs:[{q:'Is online consult supported?', a:'Yes, via Telemedicine.'}] },
+        Coorg: { clinics:[{name:'Highland Clinic', locality:'Madikeri'}], doctors:[{name:'Dr. B. R.', spec:'General', exp:'10 yrs', rating:'4.5'}], services:['Wellness Plans'], packages:[{name:'Adventure Ready Pack', desc:'Fitness + vitals', price:'₹799'}], faqs:[{q:'Can I book outdoor sample collection?', a:'Occasionally available; check with local clinic.'}] },
+        Gadag: { clinics:[{name:'Gadag City Clinic', locality:'Nav Nada'}], doctors:[{name:'Dr. S. P', spec:'Dermatology', exp:'5 yrs', rating:'4.2'}], services:['Diagnostics'], packages:[{name:'Skin & Allergy Pack', desc:'Common skin tests', price:'₹599'}], faqs:[{q:'How soon can I get results?', a:'Results typically available in 24–48 hours.'}] },
+        Hassan: { clinics:[{name:'Hassan Health', locality:'Ring Road'}], doctors:[{name:'Dr. A. L', spec:'Gynecology', exp:'12 yrs', rating:'4.7'}], services:['Diagnostics','Specialist Consultation'], packages:[{name:'Women\'s Health', desc:'Comprehensive women\'s package', price:'₹1299'}], faqs:[{q:'Are male and female doctors available?', a:'Yes. Use the doctor cards to choose.'}] },
+        'default': {
+          message: '<p class="lead">Select a city to view clinics, doctors, services, checkup packages and local FAQs.</p>'
+        }
+      };
+
+      function renderClinics(clinics){
+        if(!clinics || clinics.length===0) return '<p class="muted">No clinics listed for this location.</p>';
+        return '<h3>Available Clinics &amp; Hospitals</h3><ul class="clinic-list">'+clinics.map(c=>`<li><strong>${c.name}</strong><div class="muted">${c.locality}</div></li>`).join('')+'</ul>';
+      }
+
+      function renderDoctors(doctors){
+        if(!doctors || doctors.length===0) return '<p class="muted">No doctors listed for this location.</p>';
+        return '<h3>Available Doctors</h3><div class="grid grid-3">'+doctors.map(d=>`
+          <article class="doctor-card">
+            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='200'><rect width='100%' height='100%' fill='%23eef6f5'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%230F8EA3' font-size='18' font-family='Arial,Helvetica,sans-serif'>Doctor</text></svg>" alt="doctor photo" />
+            <div class="doc-body">
+              <h4>${d.name}</h4>
+              <div class="muted">${d.spec} · ${d.exp}</div>
+              <div class="rating">${d.rating} ★</div>
+              <div class="card-actions" style="margin-top:8px"><button class="btn-teal small consult-btn" data-doctor="${encodeURIComponent(d.name)}">Consult</button></div>
+            </div>
+          </article>`).join('')+'</div>';
+      }
+
+      function renderServices(services){
+        if(!services || services.length===0) return '<p class="muted">No services listed.</p>';
+        return '<h3>Available Services</h3><div class="grid grid-3">'+services.map(s=>`<article class="service"><h4>${s}</h4><p class="muted">Service available in this city.</p></article>`).join('')+'</div>';
+      }
+
+      function renderPackages(pkgs){
+        if(!pkgs || pkgs.length===0) return '<p class="muted">No packages available.</p>';
+        return '<h3>Checkup Packages</h3><div class="grid grid-3">'+pkgs.map(p=>`<article class="checkup-card"><div class="card-body"><h4>${p.name} <span class="muted" style="float:right;">${p.price}</span></h4><p class="muted">${p.desc}</p><div class="card-actions" style="margin-top:10px"><button class="btn-teal small">Book Now</button></div></div></article>`).join('')+'</div>';
+      }
+
+      function renderFaqs(faqs){
+        if(!faqs || faqs.length===0) return '';
+        return '<h3>Local FAQs</h3><div class="accordion">'+faqs.map(f=>`<details><summary>${f.q}</summary><div class="muted">${f.a}</div></details>`).join('')+'</div>';
+      }
+
+      function renderCity(city){
+        try{
+          const data = cityData[city] || {clinics:[], doctors:[], services:[], packages:[], faqs:[]};
+          const html = `
+            <div class="city-header"><h2 style="margin-top:0;">${city}</h2></div>
+            ${renderClinics(data.clinics)}
+            ${renderDoctors(data.doctors)}
+            ${renderServices(data.services)}
+            ${renderPackages(data.packages)}
+            ${renderFaqs(data.faqs)}
+          `;
+          const container = document.getElementById('cityResults');
+          if(!container){ console.error('Missing #cityResults element'); return; }
+          container.innerHTML = html;
+          const content = document.getElementById('cityContent');
+          if(content) content.style.display = 'block';
+          // attach consult handlers to buttons
+          container.querySelectorAll('.consult-btn').forEach(btn=>{
+            btn.addEventListener('click', function(){
+              const name = decodeURIComponent(this.getAttribute('data-doctor') || '');
+              if(name) window.selectDoctorBooking(name);
+            });
+          });
+          console.log('Rendered city:', city);
+        }catch(err){console.error('renderCity error', err);}
+      }
+
+      window.selectCity = function(city, el){
+        try{
+          // active styling
+          document.querySelectorAll('.city-item').forEach(n=>n.classList.remove('active'));
+          if(el) el.classList.add('active');
+          renderCity(city);
+          // smooth scroll to content
+          setTimeout(()=>{
+            const c = document.getElementById('cityContent');
+            if(c) c.scrollIntoView({behavior:'smooth', block:'start'});
+          },120);
+        }catch(err){console.error('selectCity error', err);}      
+      };
+      }catch(e){console.error('City-renderer initialization error', e);} 
+
+      // small helper if Consult needs to open booking modal (placeholder behavior)
+      window.selectDoctorBooking = function(doctorName){
+        // Redirect to booking page, passing doctor name as query param (optional)
+        window.location.href = 'book_checkups.html';
+      };
+
+      // default on load
+      document.addEventListener('DOMContentLoaded', function(){
+        const container = document.getElementById('cityResults');
+        if(container) container.innerHTML = cityData.default.message;
+      });
+    })();
+  </script>
+
+  <script type="text/javascript">
+    // Ensure city items always call selectCity (fallback for inline handlers)
+    document.addEventListener('DOMContentLoaded', function(){
+      document.querySelectorAll('.city-item').forEach(function(li){
+        // add keyboard support
+        li.setAttribute('tabindex', '0');
+        li.setAttribute('role', 'button');
+        li.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); li.click(); } });
+        // attach click if not already handled
+        li.addEventListener('click', function(e){
+          const city = li.getAttribute('data-city');
+          console.log('city item clicked:', city);
+          if(city && typeof window.selectCity === 'function'){
+            window.selectCity(city, li);
+          }
+        });
+      });
+    });
+  </script>
+
+  <!-- Scripts -->
+  <script src="auth.js"></script>
+  <script type="text/javascript">
+    // Redirect to login if not authenticated
+    setTimeout(() => {
+      try{
+        if (typeof auth === 'undefined' || !auth || !auth.isAuthenticated || !auth.isAuthenticated()) {
+          // if auth exists and returns false, redirect; otherwise skip when auth unavailable
+          if(typeof auth !== 'undefined' && auth && typeof auth.isAuthenticated === 'function'){
+            window.location.href = 'index.html';
+          } else {
+            console.warn('Auth not available; skipping redirect in dev environment');
+          }
+        }
+      }catch(e){
+        console.warn('Auth check error; skipping redirect', e);
+      }
+    }, 100);
+  </script>
+  <script src="intro.js" defer></script>
+  <script src="script.js" defer></script>
+  <script src="clinicMap.js" defer></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="clinicMapLeaflet.js" defer></script>
+</body>
+</html>

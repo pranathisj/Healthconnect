@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Allergy Checkup</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+  <meta name="description" content="Allergy Checkup — Health Care">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="welcome.html">
+        <span>HealthConnect</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1>Allergy Checkup</h1>
+    <p class="lead">Comprehensive allergy testing and management plan to identify and manage your allergies effectively.</p>
+
+    <div class="card" style="padding:20px; margin-top:20px;">
+      <h2>What's Included</h2>
+      <h4 style="margin-top:16px; color:#0b9d8f;">Allergy Testing</h4>
+      <ul>
+        <li>Comprehensive Skin Prick Test (60+ allergens)</li>
+        <li>Intradermal Testing (if needed)</li>
+        <li>Blood Allergy Testing (IgE)</li>
+        <li>Panel: Environmental, Food, and Inhalant Allergens</li>
+      </ul>
+
+      <h4 style="margin-top:16px; color:#0b9d8f;">Diagnostic Tests</h4>
+      <ul>
+        <li>Complete Blood Count</li>
+        <li>Eosinophil Count</li>
+        <li>Pulmonary Function Test (if respiratory symptoms)</li>
+        <li>Peak Flow Measurement</li>
+      </ul>
+
+      <h4 style="margin-top:16px; color:#0b9d8f;">Clinical Assessment</h4>
+      <ul>
+        <li>Detailed Allergy History</li>
+        <li>Physical Examination</li>
+        <li>Asthma Risk Assessment</li>
+        <li>Medication Review</li>
+      </ul>
+
+      <h4 style="margin-top:16px; color:#0b9d8f;">Management & Consultation</h4>
+      <ul>
+        <li>Allergist Consultation (45 mins)</li>
+        <li>Personalized Management Plan</li>
+        <li>Medication Recommendations</li>
+        <li>Lifestyle & Dietary Advice</li>
+        <li>Immunotherapy Guidance (if applicable)</li>
+      </ul>
+    </div>
+
+    <div class="card" style="padding:20px; margin-top:20px; background:#f0fdfb;">
+      <h3>Ideal For</h3>
+      <p>Anyone experiencing allergic symptoms including hay fever, food allergies, asthma, eczema, or recurrent allergic reactions.</p>
+
+      <h3 style="margin-top:14px;">Duration</h3>
+      <p>2-2.5 hours (including testing and consultation)</p>
+
+      <h3 style="margin-top:14px;">Age Group</h3>
+      <p>5 years and above</p>
+    </div>
+
+    <div style="margin-top:20px; display:flex; gap:10px;">
+      <a href="welcome.html#checkups" class="btn-outline">← Back to Checkups</a>
+      <button class="btn-primary" data-book="Allergy Checkup">Book Now</button>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p class="muted">© <span id="year">2025</span> Health Care.</p>
+    </div>
+  </footer>
+
+  <!-- Booking modal -->
+  <div id="bookingModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-panel">
+      <button class="modal-close" id="closeModal" aria-label="Close booking">✕</button>
+      <h3>Book Allergy Checkup</h3>
+      <p id="modalDesc">Enter your details to book this checkup.</p>
+
+      <form id="bookingForm">
+        <label>
+          <span>Full name</span>
+          <input required type="text" id="bname" placeholder="Your name">
+        </label>
+        <label>
+          <span>Phone</span>
+          <input required type="tel" id="bphone" placeholder="+91 9XXXXXXXXX">
+        </label>
+        <label>
+          <span>Preferred date</span>
+          <input required type="date" id="bdate">
+        </label>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Request booking</button>
+          <button type="button" class="btn-outline" id="cancelBooking">Cancel</button>
+        </div>
+
+        <p id="bookingStatus" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
+  <script src="./script.js" defer></script>
+</body>
+</html>

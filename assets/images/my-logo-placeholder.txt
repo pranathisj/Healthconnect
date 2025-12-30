@@ -1,0 +1,11 @@
+Place your logo image here as `my-logo.png` (or `my-logo.jpg`).
+
+You provided an image attachment; please save that file as:
+
+  assets/images/my-logo.png
+
+or
+
+  assets/images/my-logo.jpg
+
+This will be displayed in the site header. If you want me to write the actual image file into the workspace, paste the base64 representation of the image here and I will create the binary file for you.

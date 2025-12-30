@@ -1,0 +1,11 @@
+Place the provided logo image file here as `my-logo.png`.
+
+If you have the image in the conversation attachments, save or download it and copy it to this folder.
+
+Windows PowerShell example (run from project root):
+
+  Copy-Item "C:\path\to\downloaded\logo.jpg" -Destination ".\assets\images\my-logo.png"
+
+If the source file is a JPEG, rename to `my-logo.png` or update the HTML to reference `my-logo.jpg` instead.
+
+If you want me to save the image into this path for you, paste the image as base64 here and I will write it to `my-logo.png`.

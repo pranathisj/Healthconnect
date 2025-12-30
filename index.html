@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HealthConnect — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+  <style>
+    body.auth-page {
+      background: linear-gradient(135deg, #0b9d8f 0%, #2d7a73 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .auth-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      max-width: 420px;
+      width: 100%;
+      padding: 40px;
+      animation: slideIn 0.4s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .auth-header h1 {
+      color: #0b9d8f;
+      font-size: 28px;
+      margin: 0 0 8px;
+      font-weight: 900;
+    }
+
+    .auth-header p {
+      color: #999;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      color: #333;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .form-group input {
+      padding: 12px 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: 'Lato', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #0b9d8f;
+      box-shadow: 0 0 0 3px rgba(11, 157, 143, 0.1);
+    }
+
+    .form-group input.error {
+      border-color: #e63946;
+      background-color: rgba(230, 57, 70, 0.05);
+    }
+
+    .error-message {
+      color: #e63946;
+      font-size: 12px;
+      margin-top: 6px;
+      display: none;
+      font-weight: 500;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .btn-login {
+      background: linear-gradient(135deg, #0b9d8f 0%, #2d7a73 100%);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(11, 157, 143, 0.3);
+    }
+
+    .btn-login:active {
+      transform: translateY(0);
+    }
+
+    .btn-toggle {
+      background: transparent;
+      color: #0b9d8f;
+      border: 2px solid #0b9d8f;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+    }
+
+    .btn-toggle:hover {
+      background: rgba(11, 157, 143, 0.05);
+    }
+
+    .form-status {
+      color: #e63946;
+      font-size: 13px;
+      text-align: center;
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 6px;
+      background-color: rgba(230, 57, 70, 0.05);
+      display: none;
+      font-weight: 500;
+    }
+
+    .form-status.show {
+      display: block;
+    }
+
+    .form-status.success {
+      color: #0b9d8f;
+      background-color: rgba(11, 157, 143, 0.05);
+    }
+
+    .divider {
+      text-align: center;
+      color: #ccc;
+      margin: 20px 0;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .signup-link {
+      text-align: center;
+      color: #666;
+      font-size: 13px;
+      margin-top: 16px;
+    }
+
+    .signup-link a {
+      color: #0b9d8f;
+      text-decoration: none;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .signup-link a:hover {
+      text-decoration: underline;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .remember-me input {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="auth-page">
+  <div class="auth-container">
+    <!-- Login Form -->
+    <div id="loginForm" class="auth-form-wrapper">
+      <div class="auth-header">
+        <h1>HealthConnect</h1>
+        <p>Welcome back to your wellness partner</p>
+      </div>
+      <form class="auth-form" id="form-login" novalidate>
+        <div class="form-group">
+          <label for="login-email">Email or Username</label>
+          <input type="text" id="login-email" name="email" placeholder="Enter your email" required>
+          <div class="error-message"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
+          <div class="error-message"></div>
+        </div>
+
+        <div class="remember-me">
+          <input type="checkbox" id="rememberMe" name="rememberMe">
+          <label for="rememberMe" style="margin: 0; font-weight: 400;">Remember me</label>
+        </div>
+
+        <div class="form-status" id="loginStatus"></div>
+
+        <button type="submit" class="btn-login">Login</button>
+
+        <div class="signup-link">
+          Don't have an account? <a id="toggleToSignup">Sign up here</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Signup Form -->
+    <div id="signupForm" class="auth-form-wrapper" style="display: none;">
+      <div class="auth-header">
+        <h1>Create Account</h1>
+        <p>Join HealthConnect today</p>
+      </div>
+      <form class="auth-form" id="form-signup" novalidate>
+        <div class="form-group">
+          <label for="signup-name">Full Name</label>
+          <input type="text" id="signup-name" name="name" placeholder="Enter your full name" required>
+          <div class="error-message"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="signup-email">Email</label>
+          <input type="email" id="signup-email" name="email" placeholder="Enter your email" required>
+          <div class="error-message"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="signup-password">Password</label>
+          <input type="password" id="signup-password" name="password" placeholder="At least 8 characters" required>
+          <div class="error-message"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="signup-confirm">Confirm Password</label>
+          <input type="password" id="signup-confirm" name="confirm" placeholder="Confirm your password" required>
+          <div class="error-message"></div>
+        </div>
+
+        <div class="form-status" id="signupStatus"></div>
+
+        <button type="submit" class="btn-login">Create Account</button>
+
+        <div class="signup-link">
+          Already have an account? <a id="toggleToLogin">Log in here</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+  <script>
+    // If already logged in, redirect to welcome page
+    if (auth && auth.isAuthenticated()) {
+      window.location.href = 'welcome.html';
+    }
+    // Otherwise show the login form (it's already in the HTML)
+  </script>
+</body>
+</html>

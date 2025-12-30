@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book Lab Tests</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+  <meta name="description" content="Book lab tests — Health Care">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="welcome.html">
+        <span>HealthConnect</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1>Book Lab Tests</h1>
+    <p class="lead">Choose from our accredited lab tests and schedule a convenient sample collection.</p>
+
+    <div class="card" style="padding:18px; margin-top:18px;">
+      <h3>Common lab packages</h3>
+      <ul>
+        <li>Full Blood Count (FBC)</li>
+        <li>Lipid Profile</li>
+        <li>Thyroid Panel</li>
+        <li>Diabetes Screening (HbA1c)</li>
+      </ul>
+      <p>Click a package to proceed to booking (demo links).</p>
+      <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+        <a href="#" class="btn-primary" data-book="FBC">Book FBC</a>
+        <a href="#" class="btn-primary" data-book="Lipid Profile">Book Lipid</a>
+        <a href="#" class="btn-primary" data-book="Thyroid Panel">Book Thyroid</a>
+      </div>
+    </div>
+
+    <p style="margin-top:18px;"><a href="welcome.html" class="btn-outline">← Back</a></p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p class="muted">© <span id="year">2025</span> Health Care.</p>
+    </div>
+  </footer>
+
+  <!-- Booking modal (copied from welcome.html) -->
+  <div id="bookingModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-panel">
+      <button class="modal-close" id="closeModal" aria-label="Close booking">✕</button>
+      <h3>Book a free consultation / sample collection</h3>
+      <p id="modalDesc">Choose a slot and enter your contact details.</p>
+
+      <form id="bookingForm">
+        <label>
+          <span>Full name</span>
+          <input required type="text" id="bname" placeholder="Your name">
+        </label>
+        <label>
+          <span>Phone</span>
+          <input required type="tel" id="bphone" placeholder="+91 9XXXXXXXXX">
+        </label>
+        <label>
+          <span>Preferred date</span>
+          <input required type="date" id="bdate">
+        </label>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Request booking</button>
+          <button type="button" class="btn-outline" id="cancelBooking">Cancel</button>
+        </div>
+
+        <p id="bookingStatus" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
+  <script src="./script.js" defer></script>
+</body>
+</html>

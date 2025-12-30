@@ -1,0 +1,199 @@
+</template>
+
+<!-- Booking Modal (hidden by default) -->
+<div id="doctorBookingModal" style="display:none;position:fixed;z-index:1000;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.25);align-items:center;justify-content:center;">
+  <div style="background:#fff;padding:24px 20px 18px 20px;border-radius:12px;max-width:350px;width:90vw;box-shadow:0 8px 32px rgba(0,0,0,0.12);position:relative;">
+    <button id="closeBookingModal" style="position:absolute;top:10px;right:12px;background:none;border:none;font-size:1.2rem;cursor:pointer;">&times;</button>
+    <h3 style="margin-top:0;">Book Consultation</h3>
+    <div id="bookingDoctorDetails" style="margin-bottom:12px;"></div>
+    <form id="bookingForm">
+      <label>Date:<br><input type="date" id="bookingDate" required style="margin-bottom:8px;width:100%"></label><br>
+      <label>Time:<br><input type="time" id="bookingTime" required style="margin-bottom:12px;width:100%"></label><br>
+      <button type="submit" class="btn-primary small" style="width:100%;">Confirm Booking</button>
+    </form>
+    <div id="bookingStatus" style="margin-top:10px;font-size:0.98em;color:#0F8EA3;"></div>
+  </div>
+</div>
+<template id="doctors-partial">
+<section id="doctors" class="container doctors">
+  <h2>Featured Doctors</h2>
+  <div class="grid grid-3">
+
+    
+    <div class="doctor-card">
+      <img src="pbl photos/Dr Chhaya.png" alt="Dr. Chhaya — Dentist">
+      <div class="doc-body">
+        <h4>Dr. Chhaya Jain.</h4>
+        <p>Dentist · 8 years experience</p>
+        <div class="rating">⭐ 4.8</div>
+        <button class="btn-outline small connect" data-name="Dr. Chhaya Jain." data-specialization="Dentist" data-experience="8 years experience">Consult</button>
+      </div>
+    </div>
+
+    <div class="doctor-card">
+      <img src="pbl photos/Dr Ravindranath.jpeg" alt="Dr. Ravindranath HM — Ophthalmologist">
+      <div class="doc-body">
+        <h4>Dr. Ravindranath H.M</h4>
+        <p>Ophthalmologist · 10 years experience</p>
+        <div class="rating">⭐ 4.7</div>
+        <button class="btn-outline small connect" data-name="Dr. Ravindranath H.M" data-specialization="Ophthalmologist" data-experience="10 years experience">Consult</button>
+      </div>
+    </div>
+
+    <div class="doctor-card">
+      <img src="pbl photos/Dr Krishna.jpeg" alt="Dr. Krishna — Nutritionist">
+      <div class="doc-body">
+        <h4>Dr.N.H Krishna </h4>
+        <p>Pulmonologist · 20 years experience</p>
+        <div class="rating">⭐ 4.9</div>
+        <button class="btn-outline small connect" data-name="Dr.N.H Krishna" data-specialization="Pulmonologist" data-experience="20 years experience">Consult</button>
+      </div>
+    </div>
+
+    <div class="doctor-card">
+      <img src="pbl photos/Dr Susruth.jpeg" alt="Dr. Susruth Maralihalli — General Surgeon">
+      <div class="doc-body">
+        <h4>Dr. Susruth Maralihalli</h4>
+        <p>General Surgeon · 17 years experience</p>
+        <div class="rating">⭐ 4.8</div>
+        <button class="btn-outline small connect" data-name="Dr. Susruth Maralihalli" data-specialization="General Surgeon" data-experience="17 years experience">Consult</button>
+      </div>
+    </div>
+
+    <div class="doctor-card">
+      <img src="pbl photos/Dr Mallesh.jpeg" alt="Dr. Mallesh P — Cardiologist">
+      <div class="doc-body">
+        <h4>Dr. Mallesh P</h4>
+        <p>Cardiologist · 30 years experience</p>
+        <div class="rating">⭐ 4.7</div>
+        <button class="btn-outline small connect" data-name="Dr. Mallesh P" data-specialization="Cardiologist" data-experience="30 years experience">Consult</button>
+      </div>
+    </div>
+
+    <div class="doctor-card">
+      <img src="pbl photos/Dr Rashmi.jpeg" alt="Dr. Hegde Rashmi — Gynecologist">
+      <div class="doc-body">
+        <h4>Dr. Hegde Rashmi</h4>
+        <p>Gynecologist · 15 years experience</p>
+        <div class="rating">⭐ 4.9</div>
+        <button class="btn-outline small connect" data-name="Dr. Hegde Rashmi" data-specialization="Gynecologist" data-experience="15 years experience">Consult</button>
+      </div>
+    </div>
+
+    <div class="doctor-card">
+      <img src="pbl photos/Dr Sushil.jpeg" alt="Dr. Sushil Kumar SV — Psychiatrist">
+      <div class="doc-body">
+        <h4>Dr. Sushil Kumar SV</h4>
+        <p>Psychiatrist · 22 years experience</p>
+        <div class="rating">⭐ 4.8</div>
+        <button class="btn-outline small connect" data-name="Dr. Sushil Kumar SV" data-specialization="Psychiatrist" data-experience="22 years experience">Consult</button>
+      </div>
+    </div>
+
+    <div class="doctor-card">
+      <img src="pbl photos/Dr Deepthi.jpeg" alt="Dr. Deepthi Ravishankar — Dermatologist">
+      <div class="doc-body">
+        <h4>Dr. Deepthi Ravishankar</h4>
+        <p>Dermatologist · 9 years experience</p>
+        <div class="rating">⭐ 4.6</div>
+        <button class="btn-outline small connect" data-name="Dr. Deepthi Ravishankar" data-specialization="Dermatologist" data-experience="9 years experience">Consult</button>
+      </div>
+    </div>
+
+    <div class="doctor-card">
+      <img src="pbl photos/Dr Manjunath.jpeg" alt="Dr. Manjunath H.A — ENT Specialist">
+      <div class="doc-body">
+        <h4>Dr. Manjunath H.A</h4>
+        <p>ENT Specialist · 13 years experience</p>
+        <div class="rating">⭐ 4.7</div>
+        <button class="btn-outline small connect" data-name="Dr. Manjunath H.A" data-specialization="ENT Specialist" data-experience="13 years experience">Consult</button>
+      </div>
+    </div>
+
+    <div class="doctor-card">
+      <img src="pbl photos/Dr Silky.jpeg" alt="Dr. Silky Mahajan — Nutritionist">
+      <div class="doc-body">
+        <h4>Dr. Silky Mahajan</h4>
+        <p>Nutritionist · 7 years experience</p>
+        <div class="rating">⭐ 4.8</div>
+        <button class="btn-outline small connect" data-name="Dr. Silky Mahajan" data-specialization="Nutritionist" data-experience="7 years experience">Consult</button>
+      </div>
+    </div>
+
+    <div class="doctor-card">
+      <img src="pbl photos/Dr Mruthyunjaya.jpeg" alt="Dr. Mruthyunjaya Surangi — Pediatrician">
+      <div class="doc-body">
+        <h4>Dr. Mruthyunjaya Surangi</h4>
+        <p>Pediatrician · 10 years experience</p>
+        <div class="rating">⭐ 4.7</div>
+        <button class="btn-outline small connect" data-name="Dr. Mruthyunjaya Surangi" data-specialization="Pediatrician" data-experience="10 years experience">Consult</button>
+      </div>
+    </div>
+
+    <div class="doctor-card">
+      <img src="pbl photos/Dr Ashish.jpeg" alt="Dr. Ashish B.C — Orthopedic Specialist">
+      <div class="doc-body">
+        <h4>Dr. Ashish B.C</h4>
+        <p>Orthopedic Specialist · 12 years experience</p>
+        <div class="rating">⭐ 4.9</div>
+        <button class="btn-outline small connect" data-name="Dr. Ashish B.C" data-specialization="Orthopedic Specialist" data-experience="12 years experience">Consult</button>
+      </div>
+
+  </div>
+</section>
+</template>
+
+<script>
+  // Render template when opened directly in browser so Live Server shows the content
+  (function(){
+    try{
+      if(window === window.top){
+        const tpl = document.getElementById('doctors-partial');
+        if(tpl){
+          document.body.innerHTML = '';
+          document.body.appendChild(tpl.content.cloneNode(true));
+        }
+      }
+    }catch(e){ console.warn('doctors partial direct render failed', e); }
+
+    // Dynamic filtering based on selected city and cityData
+    document.addEventListener('DOMContentLoaded', function() {
+      var selectedCity = localStorage.getItem('selectedCity');
+      if (selectedCity && window.cityData && cityData[selectedCity]) {
+        var allowedSpecs = (cityData[selectedCity].doctors || []).map(function(doc) {
+          return (doc.specialization || '').toLowerCase();
+        });
+        document.querySelectorAll('.doctor-card').forEach(function(card) {
+          var docBody = card.querySelector('.doc-body');
+          if (!docBody) return;
+          var specText = '';
+          // Try to extract specialization from the <p> tag (e.g., "Cardiologist · 30 years experience")
+          var p = docBody.querySelector('p');
+          if (p) {
+            specText = (p.textContent || '').split('·')[0].trim().toLowerCase();
+          }
+          if (allowedSpecs.length === 0 || allowedSpecs.includes(specText)) {
+            card.style.display = '';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      }
+
+      // Only wire Consult buttons inside doctor profile cards
+      document.querySelectorAll('.doctor-card .connect').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          var card = btn.closest('.doctor-card');
+          if (!card) return;
+          var name = card.querySelector('h4')?.textContent?.trim() || '';
+          var specExp = card.querySelector('p')?.textContent?.trim() || '';
+          var [specialization, experience] = specExp.split('·').map(s => s.trim());
+          var doctorObj = { name: name, specialization: specialization || '', experience: experience || '' };
+          localStorage.setItem('selectedDoctor', JSON.stringify(doctorObj));
+          window.location.href = '../book_checkups.html';
+        });
+      });
+    });
+  })();
+</script>
